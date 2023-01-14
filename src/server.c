@@ -4,7 +4,13 @@ void	signal_handle(int signum, siginfo_t *info, void *context)
 {
 	pid_t pid;
 	(void)context;
-
+	
+	usleep(1000);
+	if (signum == SIGUSR1)
+		ft_printf("1");
+	if (signum == SIGUSR2)
+		ft_printf("0");
+	ft_printf("\n");
 	pid = info->si_pid;
 	kill(pid, SIGUSR1);
 }

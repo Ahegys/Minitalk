@@ -4,7 +4,10 @@ void	handler(int signum, siginfo_t *info, void *context)
 {
 	(void)context;
 	if (signum == SIGUSR1)
+	{
 		ft_printf("sended!\n");
+		exit(1);
+	}
 }
 
 void init()
@@ -18,11 +21,33 @@ void init()
 	sigaction(SIGUSR2, &sa, NULL);
 }
 
-void	process(pid_t pid, char *msg)
+void	process(pid_t pid, char *string)
 {
-	ft_printf("%s\n", msg);
-	kill (pid, SIGUSR1);
-//	kill (pid, SIGUSR2);
+ 	int i;
+    int j;
+    
+    i = 0;
+    while (string[i] != '\0')
+    {
+      printf("]%c[\n", string[i]);
+      j = 7;
+      while (j >= 0)
+      {
+        if (string[i] & (1 << j))
+		{	kill (pid, SIGUSR1);
+			ft_printf("1");
+		}
+        else
+		{
+			ft_printf("0");
+          kill (pid, SIGUSR2);
+		}
+		ft_printf("\n");
+       j--; 
+      }
+      i++;
+      printf("\n");
+    }
 }
 
 int main(int ac, char *av[])
