@@ -29,7 +29,6 @@ void	signal_handle(int signum, siginfo_t *info, void *context)
 		BIT = 0;
 		kill (info->si_pid, SIGUSR1);
 	}
-	
 	(void)context;
 }
 
