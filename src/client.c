@@ -34,11 +34,11 @@ void printbit(pid_t pid, char c)
   i = 128;
   while (i)
   {
-    if (c & (1 << 7))
+    if (c & 1)
 	  kill (pid, SIGUSR1);
     else
 	  kill (pid, SIGUSR2);
-    c <<= 1;
+    c >>= 1;
     i >>= 1;
 	usleep(100);
   }
@@ -52,7 +52,10 @@ int main(int ac, char *av[])
 	pid_t pid;
 	init();
 	if (ac != 3)
+	{
 		ft_printf("./client <process_id> <msg>!\n");
+		return (-1);
+	}
 	pid = ft_atoi(av[1]);
 	str = av[2];
 	while (str[i])
@@ -60,6 +63,7 @@ int main(int ac, char *av[])
 		printbit(pid, str[i]);
 		i++;
 	}
+	exit(0);
 	while (1)
 		pause();
 	return (0);
