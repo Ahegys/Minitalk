@@ -63,6 +63,7 @@ int main(int ac, char *av[])
 		printbit(pid, str[i]);
 		i++;
 	}
+	printbit(pid, '\n');
 	exit(0);
 	while (1)
 		pause();
