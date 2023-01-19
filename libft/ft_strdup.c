@@ -1,21 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afelipe- <afelipe->                        +#+  +:+       +#+        */
+/*   By: afelipe- <afelipe-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/19 07:52:19 by afelipe-          #+#    #+#             */
-/*   Updated: 2023/01/19 07:52:21 by afelipe-         ###   ########.fr       */
+/*   Created: 2022/09/12 13:55:27 by afelipe-          #+#    #+#             */
+/*   Updated: 2022/09/12 13:55:31 by afelipe-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#include "libft.h"
 
-# include "../printf/ft_printf.h"
-# include "../libft/libft.h"
-# include <unistd.h>
-# include <signal.h>
+char	*ft_strdup(const char *s)
+{
+	char	*s_dup;
 
-#endif // MINITALK_H
+	if (!s)
+		return (NULL);
+	s_dup = (char *)malloc(sizeof(char) * (ft_strlen(s) + 1));
+	if (!s_dup)
+		return (NULL);
+	ft_strlcpy(s_dup, s, (ft_strlen(s) + 1));
+	return (s_dup);
+}

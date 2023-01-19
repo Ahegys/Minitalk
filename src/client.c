@@ -1,55 +1,68 @@
-#include "minitalk.h"
-# include <unistd.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: afelipe- <afelipe->                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/19 06:56:34 by afelipe-          #+#    #+#             */
+/*   Updated: 2023/01/19 06:56:45 by afelipe-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../headers/minitalk.h"
+
+char	g_wait;
 
 void	handler(int signum, siginfo_t *info, void *context)
 {
 	(void)context;
 	if (signum == SIGUSR1)
-		ft_printf("sended!\n");
+		ft_printf("char sended!\n");
+	else
+		g_wait = 0;
 }
-void init()
-{
-	struct sigaction sa;
 
-	ft_bzero(&sa,sizeof (sa));
+void	init(void)
+{
+	struct sigaction	sa;
+
+	ft_bzero(&sa, sizeof (sa));
 	sa.sa_flags = 0;
 	sa.sa_sigaction = handler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 }
 
-void	putstr(char *c)
+void	sendbit(pid_t pid, char c)
 {
-	while (*c)
+	int	i;
+
+	i = 0;
+	while (i < 8)
+	{
+		if (!g_wait)
 		{
-			write(1, c, 1);
-			c++;
+			g_wait	= 1;
+			if (c & 1)
+				kill (pid, SIGUSR1);
+			else
+				kill (pid, SIGUSR2);
+			c >>= 1;
+			i++;
+			usleep(5000);
+		}
 	}
 }
 
-void printbit(pid_t pid, char c)
+int	main(int ac, char *av[])
 {
-  int i;
-  
-  i = 128;
-  while (i)
-  {
-    if (c & 1)
-	  kill (pid, SIGUSR1);
-    else
-	  kill (pid, SIGUSR2);
-    c >>= 1;
-    i >>= 1;
-	usleep(100);
-  }
-}
+	char	*str;
+	pid_t	pid;
+	size_t	i;
 
-int main(int ac, char *av[])
-{
-	int i;
-	char *str;	
 	i = 0;
-	pid_t pid;
+	g_wait = 0;
 	init();
 	if (ac != 3)
 	{
@@ -58,13 +71,13 @@ int main(int ac, char *av[])
 	}
 	pid = ft_atoi(av[1]);
 	str = av[2];
-	while (str[i])
+	while (str[i] != '\0')
 	{
-		printbit(pid, str[i]);
+		sendbit(pid, str[i]);
 		i++;
 	}
-	printbit(pid, '\n');
-	exit(0);
+	sendbit(pid, '\n');
+	exit (0);
 	while (1)
 		pause();
 	return (0);

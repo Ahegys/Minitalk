@@ -1,3 +1,15 @@
+## ########################################################################## ##
+##                                                                            ##
+##                                                        :::      ::::::::   ##
+##   Makefile                                           :+:      :+:    :+:   ##
+##                                                    +:+ +:+         +:+     ##
+##   By: afelipe- <afelipe->                        +#+  +:+       +#+        ##
+##                                                +#+#+#+#+#+   +#+           ##
+##   Created: 2023/01/19 07:52:28 by afelipe-          #+#    #+#             ##
+##   Updated: 2023/01/19 07:52:48 by afelipe-         ###   ########.fr       ##
+##                                                                            ##
+## ########################################################################## ##
+
 NAME_C = client
 NAME_S = server
 NAME = minitalk
@@ -5,11 +17,14 @@ NAME = minitalk
 SRC_DIR = src
 OBJ_DIR = objs
 
-SRC_C = $(SRC_DIR)/client.c
-SRC_S = $(SRC_DIR)/server.c
+SRC_C = src/client.c
+SRC_S = src/server.c
 
-OBJ_C = $(OBJ_DIR)/client.o
-OBJ_S = $(OBJ_DIR)/server.o
+OBJ_C = objs/client.o
+OBJ_S = objs/server.o
+
+LIBFT_LIB = ./libft/libft.a
+PRINTF_LIB = ./printf/libftprintf.a
 
 INC_DIR = ./headers
 
@@ -20,12 +35,16 @@ $(NAME): $(NAME_C) $(NAME_S)
 all: $(NAME_C) $(NAME_S)
 
 $(NAME_C): $(OBJ_C)
-	$(CC) $^ -o $@
+	make re -C ./printf/
+	make re -C ./libft/
+	cc -g $(CFLAGS) $(OBJ_C) $(LIBFT_LIB) $(PRINTF_LIB) -o $(NAME_C)
 
 $(NAME_S): $(OBJ_S)
-	$(CC) $^ -o $@
+	make re -C ./printf/
+	make re -C ./libft/
+	cc -g $(CFLAGS) $(OBJ_S) $(LIBFT_LIB) $(PRINTF_LIB) -o $(NAME_S)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+objs/%.o: src/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -34,6 +53,8 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME_C) $(NAME_S)
+	make fclean -C ./printf/
+	make fclean -C ./libft/
 
 re: fclean all
 

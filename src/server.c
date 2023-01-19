@@ -1,52 +1,56 @@
-#include "minitalk.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: afelipe- <afelipe->                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/19 06:56:51 by afelipe-          #+#    #+#             */
+/*   Updated: 2023/01/19 06:56:53 by afelipe-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static int BIT;
+#include "../headers/minitalk.h"
 
-void	putstr(char *c)
-{
-	while (*c)
-		{
-			write(1, c, 1);
-			c++;
-	}
-}
+static char	g_bit;
+
 void	signal_handle(int signum, siginfo_t *info, void *context)
 {
-	static char temp;
+	static char	temp;
 
-	if (BIT <= 8)
+	if (g_bit <= 8)
 	{
 		if (signum == SIGUSR1)
-			temp += 1 << BIT;
-		if (signum == SIGUSR2)
-			temp += 0 << BIT;
-		BIT++;
+			temp += 1 << g_bit;
+		else
+			temp += 0 << g_bit;
+		g_bit++;
 	}
-	if (BIT == 8)
+	if (g_bit == 8)
 	{
 		write(1, &temp, 1);
-		temp = '\0';
-		BIT = 0;
-		kill (info->si_pid, SIGUSR1);
+		g_bit = 0;
+		temp = 0;
+		kill(info->si_pid, SIGUSR1);
 	}
+	kill(info->si_pid, SIGUSR2);
 	(void)context;
 }
 
-void init(void)
+void	init(void)
 {
-	struct sigaction sa;
-	
-	bzero(&sa, sizeof(sa));
+	struct sigaction	sa;
+
+	ft_bzero(&sa, sizeof(sa));
 	sa.sa_sigaction = signal_handle;
 	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 }
 
-int main(void)
+int	main(void)
 {
 	init();
-
 	ft_printf("server process = [%d]\n", getpid());
 	while (1)
 		pause();
